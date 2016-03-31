@@ -28,6 +28,48 @@ public:
         leftNode = nullptr;
         rightNode = nullptr;
     }
+    
+    Node(int val){
+        leftNode = nullptr;
+        rightNode = nullptr;
+        value = val;
+    }
+    
+    Node* remove(int value, Node *parent) {
+        if (value < this->value) {
+            if (leftNode != nullptr){
+                return leftNode->remove(value, this);
+            }else{
+                return nullptr;
+            }
+        } else if (value > this->value) {
+            if (rightNode != nullptr){
+                return rightNode->remove(value, this);
+            }else{
+                return nullptr;
+            }
+        } else {
+            if (leftNode != nullptr && rightNode != nullptr) {
+                this->value = rightNode->minValue();
+                return rightNode->remove(this->value, this);
+            } else if (parent->leftNode == this) {
+                parent->leftNode = (leftNode != nullptr) ? leftNode : rightNode;
+                return this;
+            } else if (parent->rightNode == this) {
+                parent->rightNode = (leftNode != nullptr) ? leftNode : rightNode;
+                return this;
+            }else{
+                return nullptr;
+            }
+        }
+    }
+    
+    int minValue() {
+        if (leftNode == nullptr)
+            return value;
+        else
+            return leftNode->minValue();
+    }
 };
 
 Node *rootNode = nullptr;
@@ -36,8 +78,11 @@ void parseInputFile(ifstream& inputFile);
 void insert(Node *&root, int value);
 int getNumberOfNodes( Node *root );
 string GetPreorderTraversalString(Node *root);
+string GetInorderTraversalString(Node *root);
+string GetPostorderTraversalString(Node *root);
 bool treeContainsValue(Node *root, int value);
 int GetTreeHeight(Node *root);
+bool removeNodeWithValue(int value);
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -61,12 +106,15 @@ int main(int argc, const char * argv[]) {
         outputFile << "Number of nodes in the bst: " << getNumberOfNodes(rootNode) << endl;
         outputFile << "Height of the bst: " << GetTreeHeight(rootNode) << endl;
         outputFile << "Pre-order traversal: " << GetPreorderTraversalString(rootNode) << endl;
+        outputFile << "In-order traversal: " << GetInorderTraversalString(rootNode) << endl;
+        outputFile << "Post-order traversal: " << GetPostorderTraversalString(rootNode) << endl;
     }
 
     cout << "Number of nodes in the bst: " << getNumberOfNodes(rootNode) << endl;
     cout << "Height of the bst: " << GetTreeHeight(rootNode) << endl;
-    cout << "Pre-order traversal: " << GetPreorderTraversalString(rootNode);
-    cout << endl;
+    cout << "Pre-order traversal: " << GetPreorderTraversalString(rootNode) << endl;
+    cout << "In-order traversal: " << GetInorderTraversalString(rootNode) << endl;
+    cout << "Post-order traversal: " << GetPostorderTraversalString(rootNode) << endl;
     
     return EXIT_SUCCESS;
 }
@@ -98,6 +146,8 @@ void parseInputFile(ifstream& inputFile){
                     value = std::stoi(sectionHolder);
                     if(inserting && !treeContainsValue(rootNode, value)){
                         insert(rootNode, value);
+                    }else if(!inserting && treeContainsValue(rootNode, value)){
+                        removeNodeWithValue(value);
                     }
                 }
             }
@@ -169,6 +219,34 @@ string GetPreorderTraversalString(Node *root) {
 }
 
 /**
+ * Prints the tree in Inorder: Left, Root, Right
+ */
+string GetInorderTraversalString(Node *root) {
+    if (root != nullptr) {  // Standard null checking
+        string inorderTraversal = GetInorderTraversalString(root->leftNode) + " ";    // Print the left subtree
+        inorderTraversal += to_string(root->value);      // Print the root integer value
+        inorderTraversal += GetInorderTraversalString(root->rightNode);   // Print the right subtree
+        return inorderTraversal;
+    }else{
+        return "";
+    }
+}
+
+/**
+ * Prints the tree in Postorder: Left, Right, Root
+ */
+string GetPostorderTraversalString(Node *root) {
+    if (root != nullptr) {  // Standard null checking
+        string postorderTraversal = GetPostorderTraversalString(root->leftNode);    // Print the left subtree
+        postorderTraversal += GetPostorderTraversalString(root->rightNode);   // Print the right subtree
+        postorderTraversal += to_string(root->value) + " ";      // Print the root integer value
+        return postorderTraversal;
+    }else{
+        return "";
+    }
+}
+
+/**
  * Gets the height of the bst in integer form
  */
 int GetTreeHeight(Node *root) {
@@ -183,5 +261,30 @@ int GetTreeHeight(Node *root) {
     return 1 + max(leftHeight, rightHeight);
 }
 
+bool removeNodeWithValue(int value) {
+    if (rootNode == NULL)
+        return false;
+    else {
+        if (rootNode->value == value) {
+            Node auxRoot = Node(0);
+            
+            auxRoot.leftNode = rootNode;
+            Node *removedNode = rootNode->remove(value, &auxRoot);
+            rootNode = auxRoot.leftNode;
+            if (removedNode != nullptr) {
+                delete removedNode;
+                return true;
+            } else
+                return false;
+        } else {
+            Node *removedNode = rootNode->remove(value, NULL);
+            if (removedNode != NULL) {
+                delete removedNode;
+                return true;
+            } else
+                return false;
+        }
+    }
+}
 
 
