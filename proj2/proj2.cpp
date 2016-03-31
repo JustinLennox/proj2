@@ -36,7 +36,6 @@ void parseInputFile(ifstream& inputFile);
 void insert(Node *&root, int value);
 int getNumberOfNodes( Node *root );
 string GetPreorderTraversalString(Node *root);
-string preorderTraversal = "";
 bool treeContainsValue(Node *root, int value);
 int GetTreeHeight(Node *root);
 
@@ -61,16 +60,12 @@ int main(int argc, const char * argv[]) {
     if(outputFile.good()){
         outputFile << "Number of nodes in the bst: " << getNumberOfNodes(rootNode) << endl;
         outputFile << "Height of the bst: " << GetTreeHeight(rootNode) << endl;
-        outputFile << "Pre-order traversal: ";
-        outputFile << GetPreorderTraversalString(rootNode) << endl;
-        
-        cout << endl;
+        outputFile << "Pre-order traversal: " << GetPreorderTraversalString(rootNode) << endl;
     }
 
     cout << "Number of nodes in the bst: " << getNumberOfNodes(rootNode) << endl;
     cout << "Height of the bst: " << GetTreeHeight(rootNode) << endl;
-    cout << "Pre-order traversal: ";
-    cout << GetPreorderTraversalString(rootNode);
+    cout << "Pre-order traversal: " << GetPreorderTraversalString(rootNode);
     cout << endl;
     
     return EXIT_SUCCESS;
@@ -157,16 +152,20 @@ int getNumberOfNodes( Node *root ) {
     }
 }
 
+//8 3 -2 -3 -5 0 6 4 7 20 13 9 15 17
+
 /**
  * Prints the tree in Preorder: Root, Left, Right
  */
 string GetPreorderTraversalString(Node *root) {
     if (root != nullptr) {  // Standard null checking
-        preorderTraversal += to_string(root->value) + " ";      // Print the root integer value
-        GetPreorderTraversalString( root->leftNode );    // Print the left subtree
-        GetPreorderTraversalString( root->rightNode );   // Print the right subtree
+        string preorderTraversal = to_string(root->value) + " ";      // Print the root integer value
+        preorderTraversal += GetPreorderTraversalString(root->leftNode);    // Print the left subtree
+        preorderTraversal += GetPreorderTraversalString(root->rightNode);   // Print the right subtree
+        return preorderTraversal;
+    }else{
+        return "";
     }
-    return preorderTraversal;
 }
 
 /**
