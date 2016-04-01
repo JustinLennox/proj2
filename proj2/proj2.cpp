@@ -64,19 +64,17 @@ public:
                 parent->leftNode = (leftNode != nullptr) ? leftNode : rightNode;
                 return this;
             } else if (parent->rightNode == this) {
-                cout << to_string(this->value);
-                if(leftNode != nullptr){
-                    this->value = leftNode->minValue();
-                    return leftNode->deleteNode(this->value, this);
-                }else if(rightNode != nullptr){
-                    this->value = rightNode->minValue();
-                    return rightNode->deleteNode(this->value, this);
-                }
+                parent->rightNode = (leftNode != nullptr) ? leftNode : rightNode;
                 return this;
             }else{
                 return nullptr;
             }
         }
+    }
+    
+    Node* FindMin(Node* root){
+        while(root->leftNode != NULL) root = root->leftNode;
+        return root;
     }
     
     /**
@@ -254,15 +252,19 @@ void PrintTree(){
 }
 
 int getLevelForValue(Node *root, int value, int level){
-    if(root->value == value){
-        if(level > treeMapSize){
-            treeMapSize = level;
+    if(root != nullptr){
+        if(root->value == value){
+            if(level > treeMapSize){
+                treeMapSize = level;
+            }
+            return level;
+        }else if(value > root->value){
+            return getLevelForValue(root->rightNode, value, level + 1);
+        }else{
+            return getLevelForValue(root->leftNode, value, level + 1);
         }
-        return level;
-    }else if(value > root->value){
-        return getLevelForValue(root->rightNode, value, level + 1);
     }else{
-        return getLevelForValue(root->leftNode, value, level + 1);
+        return 0;
     }
 }
 
