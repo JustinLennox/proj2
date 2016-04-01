@@ -23,6 +23,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D051EDDB1CAEF12C006E3E36 /* output1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = output1.txt; sourceTree = "<group>"; };
+		D051EDDC1CAEF136006E3E36 /* test1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test1.txt; sourceTree = "<group>"; };
 		D0FC45DE1CAD768A00B093A4 /* InsertTest.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = InsertTest.txt; sourceTree = "<group>"; };
 		D0FC45DF1CAD78CF00B093A4 /* test2.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test2.txt; sourceTree = "<group>"; };
 		D0FC45E01CAD78CF00B093A4 /* test3.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test3.txt; sourceTree = "<group>"; };
@@ -66,9 +68,11 @@
 			children = (
 				D0FC45DE1CAD768A00B093A4 /* InsertTest.txt */,
 				D0FCB6BF1CA4DD1F0020FCE4 /* proj2.cpp */,
+				D051EDDC1CAEF136006E3E36 /* test1.txt */,
 				D0FC45DF1CAD78CF00B093A4 /* test2.txt */,
 				D0FC45E01CAD78CF00B093A4 /* test3.txt */,
 				D0FC45E11CAD78CF00B093A4 /* test4.txt */,
+				D051EDDB1CAEF12C006E3E36 /* output1.txt */,
 				D0FC45E21CAD78DB00B093A4 /* output2.txt */,
 				D0FC45E31CAD78DB00B093A4 /* output3.txt */,
 				D0FC45E41CAD78DB00B093A4 /* output4.txt */,

@@ -18,40 +18,46 @@
 using std::ifstream;
 using namespace std;
 
+/**
+ * A node class for use in a binary search tree.
+ */
 class Node {
 public:
     int value;
     Node *leftNode;
     Node *rightNode;
     
+    //Default constructor
     Node(){
         leftNode = nullptr;
         rightNode = nullptr;
     }
     
+    //Constructor with value passed
     Node(int val){
         leftNode = nullptr;
         rightNode = nullptr;
         value = val;
     }
     
-    Node* remove(int value, Node *parent) {
+    //Method to remove a node from its parent and replace it with its successor
+    Node* deleteNode(int value, Node *parent) {
         if (value < this->value) {
             if (leftNode != nullptr){
-                return leftNode->remove(value, this);
+                return leftNode->deleteNode(value, this);
             }else{
                 return nullptr;
             }
         } else if (value > this->value) {
             if (rightNode != nullptr){
-                return rightNode->remove(value, this);
+                return rightNode->deleteNode(value, this);
             }else{
                 return nullptr;
             }
         } else {
             if (leftNode != nullptr && rightNode != nullptr) {
                 this->value = rightNode->minValue();
-                return rightNode->remove(this->value, this);
+                return rightNode->deleteNode(this->value, this);
             } else if (parent->leftNode == this) {
                 parent->leftNode = (leftNode != nullptr) ? leftNode : rightNode;
                 return this;
@@ -64,11 +70,15 @@ public:
         }
     }
     
+    /**
+     * Gets the minimum value of a node by left tree recursion
+     */
     int minValue() {
-        if (leftNode == nullptr)
+        if (leftNode == nullptr){ //Base step
             return value;
-        else
-            return leftNode->minValue();
+        }else{
+            return leftNode->minValue(); //Recursive step
+        }
     }
 };
 
@@ -250,6 +260,10 @@ string GetPostorderTraversalString(Node *root) {
  * Gets the height of the bst in integer form
  */
 int GetTreeHeight(Node *root) {
+    if(root == nullptr){
+        return -1;
+    }
+    
     int leftHeight = 0;
     if(root->leftNode != nullptr){
         leftHeight = GetTreeHeight(root->leftNode);
@@ -261,28 +275,32 @@ int GetTreeHeight(Node *root) {
     return 1 + max(leftHeight, rightHeight);
 }
 
+/**
+ * Removes a node from the binary search tree
+ */
 bool removeNodeWithValue(int value) {
-    if (rootNode == NULL)
+    if (rootNode == NULL){
         return false;
-    else {
+    }else {
         if (rootNode->value == value) {
-            Node auxRoot = Node(0);
-            
-            auxRoot.leftNode = rootNode;
-            Node *removedNode = rootNode->remove(value, &auxRoot);
-            rootNode = auxRoot.leftNode;
+            Node temporaryNode = Node(0);
+            temporaryNode.leftNode = rootNode;
+            Node *removedNode = rootNode->deleteNode(value, &temporaryNode);
+            rootNode = temporaryNode.leftNode;
             if (removedNode != nullptr) {
                 delete removedNode;
                 return true;
-            } else
+            }else {
                 return false;
+            }
         } else {
-            Node *removedNode = rootNode->remove(value, NULL);
+            Node *removedNode = rootNode->deleteNode(value, NULL);
             if (removedNode != NULL) {
                 delete removedNode;
                 return true;
-            } else
+            } else {
                 return false;
+            }
         }
     }
 }
