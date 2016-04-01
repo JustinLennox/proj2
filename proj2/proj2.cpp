@@ -14,6 +14,8 @@
 #include <sstream>
 #include <algorithm>
 #include <fstream>
+#include <map>
+#include <algorithm>
 
 using std::ifstream;
 using namespace std;
@@ -62,7 +64,14 @@ public:
                 parent->leftNode = (leftNode != nullptr) ? leftNode : rightNode;
                 return this;
             } else if (parent->rightNode == this) {
-                parent->rightNode = (leftNode != nullptr) ? leftNode : rightNode;
+                cout << to_string(this->value);
+                if(leftNode != nullptr){
+                    this->value = leftNode->minValue();
+                    return leftNode->deleteNode(this->value, this);
+                }else if(rightNode != nullptr){
+                    this->value = rightNode->minValue();
+                    return rightNode->deleteNode(this->value, this);
+                }
                 return this;
             }else{
                 return nullptr;
@@ -74,10 +83,20 @@ public:
      * Gets the minimum value of a node by left tree recursion
      */
     int minValue() {
-        if (leftNode == nullptr){ //Base step
+        if (leftNode == NULL){ //Base step
             return value;
         }else{
             return leftNode->minValue(); //Recursive step
+        }
+    }
+    
+    Node& getNodeWithValue(Node* root, int value){
+        if(root->value == value){
+            return *root;
+        }else if(value > root->value){
+            return getNodeWithValue(root->rightNode, value);
+        }else{
+            return getNodeWithValue(root->leftNode, value);
         }
     }
 };
@@ -91,7 +110,13 @@ string GetPreorderTraversalString(Node *root);
 string GetInorderTraversalString(Node *root);
 string GetPostorderTraversalString(Node *root);
 bool treeContainsValue(Node *root, int value);
+int getLevelForValue(Node *root, int value, int level = 0);
+vector<int> treeMap[100];
+vector<int> treeValues;
+int treeMapSize = 0;
+string visualString;
 int GetTreeHeight(Node *root);
+void PrintTree();
 bool removeNodeWithValue(int value);
 
 int main(int argc, const char * argv[]) {
@@ -119,13 +144,14 @@ int main(int argc, const char * argv[]) {
         outputFile << "In-order traversal: " << GetInorderTraversalString(rootNode) << endl;
         outputFile << "Post-order traversal: " << GetPostorderTraversalString(rootNode) << endl;
     }
-
+    
+    PrintTree();
     cout << "Number of nodes in the bst: " << getNumberOfNodes(rootNode) << endl;
-    cout << "Height of the bst: " << GetTreeHeight(rootNode) << endl;
+    cout << "Height of the bst: " << treeMapSize << endl;
     cout << "Pre-order traversal: " << GetPreorderTraversalString(rootNode) << endl;
     cout << "In-order traversal: " << GetInorderTraversalString(rootNode) << endl;
     cout << "Post-order traversal: " << GetPostorderTraversalString(rootNode) << endl;
-    
+    cout << "Extra credit tree visualization: " << endl << visualString << endl;
     return EXIT_SUCCESS;
 }
 
@@ -189,12 +215,54 @@ void insert(Node *&root, int value){
     if(root == nullptr){    //There's no root node, set this as the root
         root = new Node();
         root->value = value;
+        treeValues.push_back(value);
         return;
     }else if (value > root->value) {    //Recursively branch into right subtree
         insert(root->rightNode, value);
     }else { //Recursively branch into left subtree
         insert(root->leftNode, value);
+        
+    }
+}
 
+void PrintTree(){
+    string treeString = "";
+    for(int i = 0; i < treeValues.size(); i++){
+        vector<int> levelVector = treeMap[getLevelForValue(rootNode, treeValues.at(i))];
+        levelVector.push_back(treeValues.at(i));
+        treeMap[getLevelForValue(rootNode, treeValues.at(i))] = levelVector;
+    }
+    int maxCount = 0;
+    for (int i = 0; i < treeMapSize + 1; i++)
+    {
+        vector<int> currentVector = treeMap[i];
+        maxCount = currentVector.size() > maxCount ? (int)currentVector.size() : maxCount;
+    }
+    for (int i = 0; i < treeMapSize + 1; i++)
+    {
+        vector<int> currentVector = treeMap[i];
+        sort (currentVector.begin(), currentVector.begin() + currentVector.size());
+        for(int i = (int)currentVector.size(); i <= maxCount; i++){
+            treeString += "\t";
+        }
+        for(int i = 0; i < currentVector.size(); i++){
+            treeString += to_string((int)currentVector.at(i)) + "\t";
+        }
+        treeString += "\n";
+    }
+    visualString = treeString;
+}
+
+int getLevelForValue(Node *root, int value, int level){
+    if(root->value == value){
+        if(level > treeMapSize){
+            treeMapSize = level;
+        }
+        return level;
+    }else if(value > root->value){
+        return getLevelForValue(root->rightNode, value, level + 1);
+    }else{
+        return getLevelForValue(root->leftNode, value, level + 1);
     }
 }
 
@@ -206,8 +274,12 @@ int getNumberOfNodes( Node *root ) {
         return 0;
     }else {
         int numberOfNodes = 1;
-        numberOfNodes += getNumberOfNodes(root->leftNode);  //Recursively add left
-        numberOfNodes += getNumberOfNodes(root->rightNode); //Recursively add right
+        if(root->leftNode != nullptr){
+            numberOfNodes += getNumberOfNodes(root->leftNode);  //Recursively add left
+        }
+        if(root->rightNode != nullptr){
+            numberOfNodes += getNumberOfNodes(root->rightNode); //Recursively add right
+        }
         return numberOfNodes;
     }
 }
@@ -279,6 +351,12 @@ int GetTreeHeight(Node *root) {
  * Removes a node from the binary search tree
  */
 bool removeNodeWithValue(int value) {
+
+    for(int i = 0; i < treeValues.size(); i++){
+        if(treeValues.at(i) == value){
+            treeValues.erase(treeValues.begin() + i);
+        }
+    }
     if (rootNode == NULL){
         return false;
     }else {
@@ -304,5 +382,4 @@ bool removeNodeWithValue(int value) {
         }
     }
 }
-
 
