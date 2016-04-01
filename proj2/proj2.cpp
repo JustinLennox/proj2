@@ -294,8 +294,8 @@ bool removeNodeWithValue(int value) {
                 return false;
             }
         } else {
-            Node *removedNode = rootNode->deleteNode(value, NULL);
-            if (removedNode != NULL) {
+            Node *removedNode = rootNode->deleteNode(value, nullptr);
+            if (removedNode != nullptr) {
                 delete removedNode;
                 return true;
             } else {
